@@ -16,7 +16,7 @@ class app(tk.CTk):
         self.mainmenu = tk.CTkFrame(self)
         self.mainmenu.grid_columnconfigure(0, weight=1)
 
-        self.mainTitle = tk.CTkLabel(self.mainmenu, text="One Click Story", font=tk.CTkFont("Segoe", 80, "normal"), fg_color="transparent")
+        self.mainTitle = tk.CTkLabel(self.mainmenu, text="One Click Story", font=tk.CTkFont("Segoe", 80, "normal"))
         self.startButton = tk.CTkButton(self.mainmenu, text="Start", font=tk.CTkFont("Segoe", 35, "normal"))
         self.privacyButton = tk.CTkButton(self.mainmenu, text="Privacy", font=tk.CTkFont("Segoe", 35, "normal"))
         self.exitButton = tk.CTkButton(self.mainmenu, text="Exit", font=tk.CTkFont("Segoe", 35, "normal"))
