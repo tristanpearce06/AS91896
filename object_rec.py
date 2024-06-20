@@ -100,7 +100,7 @@ def returnFoundObjects(results):
             sdf.std_dict_addition(detected, model.names[int(box.cls[0])])
     return detected
 
-def displayObjects(results, frames):
+def modifyImage(results, frames):
     for result in results:
         for box in result.boxes:
                 # Extract bounding box coordinates and confidence score
@@ -115,13 +115,18 @@ def displayObjects(results, frames):
     
     return frames
 
-ret, frame = captureFrame()
+def displayWindow(modifiedimg):
+    cv2.imshow("Image", modifiedimg)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
-modelresults = model(frame)
+# ret, frame = captureFrame()
 
-print(returnFoundObjects(modelresults))
+# modelresults = model(frame)
 
-cv2.imshow("Image", displayObjects(modelresults, frame))
+# print(returnFoundObjects(modelresults))
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# cv2.imshow("Image", displayObjects(modelresults, frame))
+
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
