@@ -1,5 +1,4 @@
-def std_dict_addition(obj):
-    dict = {}
+def std_dict_addition(dict, obj):
     if obj in dict:
         dict[obj] =+ 1
     else:
