@@ -87,11 +87,15 @@ classNames = ["person",
 "hair drier",
 "toothbrush"]
 
+# Capture a single frame from the user's camera / Capture all usable data from an image
+
 def captureFrame():
     cap = cv2.VideoCapture(0)
     ret, frame = cap.read()
     cap.release()
     return ret, frame
+
+# Creates a dictionary with all detected objects in format {key:num}
 
 def returnFoundObjects(results):
     detected = {}
@@ -100,10 +104,12 @@ def returnFoundObjects(results):
             sdf.std_dict_addition(detected, model.names[int(box.cls[0])])
     return detected
 
+# Modifies the source image to include confidence score and bounding boxes
+
 def modifyImage(results, frames):
     for result in results:
         for box in result.boxes:
-                # Extract bounding box coordinates and confidence score
+                # Extract bounding box coordinates
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
                 confidence = box.conf[0]
                 class_id = box.cls[0]
@@ -114,6 +120,8 @@ def modifyImage(results, frames):
                 cv2.putText(frames, f'{label} {confidence:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
     
     return frames
+
+# Create a window to display modified image (debug)
 
 def displayWindow(modifiedimg):
     cv2.imshow("Image", modifiedimg)

@@ -1,3 +1,5 @@
+# Object recognition module test
+
 import object_rec
 
 ret, frame = object_rec.captureFrame()
