@@ -127,14 +127,3 @@ def displayWindow(modifiedimg):
     cv2.imshow("Image", modifiedimg)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
-# ret, frame = captureFrame()
-
-# modelresults = model(frame)
-
-# print(returnFoundObjects(modelresults))
-
-# cv2.imshow("Image", displayObjects(modelresults, frame))
-
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
