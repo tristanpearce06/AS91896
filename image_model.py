@@ -3,7 +3,7 @@ from PIL import Image
 from io import BytesIO
 
 API_TOKEN = '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'
-API_URL = "https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4"
+API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3-medium-diffusers"
 
 headers = {
     "Authorization": f"Bearer {API_TOKEN}"

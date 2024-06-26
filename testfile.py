@@ -2,6 +2,7 @@
 
 import object_rec
 import chat_model
+import image_model
 
 # ret, frame = object_rec.captureFrame()
 
@@ -37,4 +38,14 @@ modified_img = object_rec.modifyImage(modelresults, frame)
 
 object_rec.displayWindow(modified_img)
 
-print(chat_model.gen_story(detected_obj))
+print("Generating story")
+
+story = chat_model.gen_story(detected_obj)
+print(story)
+
+# Test with image generation
+
+print("Generating image")
+
+image = image_model.generate_image_from_text(story)
+image.show()
