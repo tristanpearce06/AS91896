@@ -48,4 +48,5 @@ print(story)
 print("Generating image")
 
 image = image_model.generate_image_from_text(story)
+
 image.show()

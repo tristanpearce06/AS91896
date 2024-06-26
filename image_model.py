@@ -10,8 +10,10 @@ headers = {
 }
 
 def generate_image_from_text(prompt):
+    modifiedPrompt = f"{prompt}, ((Art, fantasy, unrealistic))"
     payload = {
-        "inputs": prompt,
+        "inputs": modifiedPrompt,
+        "negative_prompt": "out of frame, lowres, text, error, cropped, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, out of frame, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck, username, watermark, signature"
     }
 
     response = requests.post(API_URL, headers=headers, json=payload)
