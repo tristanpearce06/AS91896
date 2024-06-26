@@ -6,12 +6,14 @@ import customtkinter as tk
 tk.set_appearance_mode("system")
 tk.set_default_color_theme("blue")
 
+privacyText = "Placeholder privacy text lol real is this real chat what lol seriously yo thats actually crazy what???"
+
 class app(tk.CTk):
     def __init__(self):
         super().__init__()
 
         self.title("Photo Story")
-        self.geometry("600x360")
+        self.geometry("800x500")
 
         self.container = tk.CTkFrame(self)
         self.container.pack(anchor=CENTER, expand=True)
@@ -58,12 +60,15 @@ class PrivacyPage(tk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
 
         self.mainTitle = tk.CTkLabel(self, text="One Click Story", font=tk.CTkFont("Segoe", 80, "normal"))
+        self.privacyPolicy = tk.CTkTextbox(self, font=tk.CTkFont("Segoe", 20, "normal"), width=500)
+        self.privacyPolicy.insert("0.0", privacyText*50)
         self.backButton = tk.CTkButton(self, text="Back", font=tk.CTkFont("Segoe", 35, "normal"), command=lambda:controller.show_frame("HomePage"))
         self.exitButton = tk.CTkButton(self, text="Exit", font=tk.CTkFont("Segoe", 35, "normal"), command=self.quit)
 
         self.mainTitle.grid(row=0, column=0)
-        self.backButton.grid(row=1, column=0, pady=5)
-        self.exitButton.grid(row=2, column=0, pady=5)
+        self.privacyPolicy.grid(row=1, column=0)
+        self.backButton.grid(row=2, column=0, pady=5)
+        self.exitButton.grid(row=3, column=0, pady=5)
 
 
 app().mainloop()
