@@ -47,8 +47,6 @@ class HomePage(tk.CTkFrame):
         self.privacyButton.grid(row=2, column=0, pady=5)
         self.exitButton.grid(row=3, column=0, pady=5)
 
-        self.pack(anchor=CENTER, expand=True)
-
 
 class PrivacyPage(tk.CTkFrame):
     def __init__(self, parent, controller):
