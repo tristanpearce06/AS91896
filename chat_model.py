@@ -1,7 +1,7 @@
 from openai import OpenAI
 
 def gen_story(items:dict):
-    style = input("Enter the style of story to generate")
+    style = input("Enter the style of story to generate\n")
 
     client = OpenAI(
         base_url="https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct/v1",

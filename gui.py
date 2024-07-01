@@ -2,6 +2,8 @@ import tkinter
 from tkinter import CENTER
 import tkinter.messagebox
 import customtkinter as tk
+from PIL import Image, ImageTk
+from io import BytesIO
 
 tk.set_appearance_mode("system")
 tk.set_default_color_theme("blue")
@@ -20,7 +22,7 @@ class app(tk.CTk):
 
         self.frames = {}
 
-        for Fr in (HomePage, PrivacyPage):
+        for Fr in (HomePage, PrivacyPage, ImageInputPage):
             PageName = Fr.__name__
             frame = Fr(parent=self.container, controller=self)
             self.frames[PageName] = frame
@@ -40,7 +42,7 @@ class HomePage(tk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
 
         self.mainTitle = tk.CTkLabel(self, text="One Click Story", font=tk.CTkFont("Segoe", 60, "normal"))
-        self.startButton = tk.CTkButton(self, text="Start", font=tk.CTkFont("Segoe", 20, "normal"))
+        self.startButton = tk.CTkButton(self, text="Start", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageInputPage"))
         self.privacyButton = tk.CTkButton(self, text="Privacy", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("PrivacyPage"))
         self.exitButton = tk.CTkButton(self, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
@@ -70,5 +72,17 @@ class PrivacyPage(tk.CTkFrame):
         self.backButton.grid(row=3, column=0, pady=5)
         self.exitButton.grid(row=4, column=0, pady=5)
 
+class ImageInputPage(tk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        self.grid_columnconfigure(0, weight=1)
+
+        self.mainTitle = tk.CTkLabel(self, text="Image Input", font=tk.CTkFont("Segoe", 60, "normal"))
+        self.exitButton = tk.CTkButton(self, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+        
+        self.mainTitle.grid(row=1, column=0)
+        self.exitButton.grid(row=4, column=0, pady=5)
 
 app().mainloop()
