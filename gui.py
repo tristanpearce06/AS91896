@@ -113,15 +113,23 @@ class InputSelect(tk.CTkFrame):
         self.controller = controller
 
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
 
         self.mainTitle = tk.CTkLabel(self, text="Input Selection", font=tk.CTkFont("Segoe", 60, "normal"))
-        self.imageInput = tk.CTkButton(self, text="Add From PC", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageInputPage"))
-        self.cameraInput = tk.CTkButton(self, text="Add From Camera", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
-        self.exitButton = tk.CTkButton(self, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+        
+        self.centerFrame = tk.CTkFrame(self, border_width=1)
+        self.centerFrame.grid_columnconfigure(0, weight=1)
+        self.imageInput = tk.CTkButton(self.centerFrame, text="Add From PC", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageInputPage"))
+        self.cameraInput = tk.CTkButton(self.centerFrame, text="Add From Camera", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+        self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("HomePage"))
+        self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
-        self.mainTitle.grid(row=1, column=0)
-        self.imageInput.grid(row=2, column=0, pady=5)
-        self.cameraInput.grid(row=3, column=0, pady=5)
-        self.exitButton.grid(row=4, column=0, pady=5)
+        self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
+        
+        self.centerFrame.grid(row=2, column=0)
+        self.imageInput.pack(padx=15, pady=(15, 5))
+        self.cameraInput.pack(padx=15, pady=5)
+        self.backButton.pack(padx=15, pady=5)
+        self.exitButton.pack(padx=15, pady=(5, 15))
 
 app().mainloop()
