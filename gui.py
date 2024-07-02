@@ -10,6 +10,11 @@ tk.set_default_color_theme("blue")
 
 privacyText = "Placeholder privacy text lol real is this real chat what lol seriously yo thats actually crazy what???"
 
+# Create general functions before initializing the UI
+
+
+
+
 class app(tk.CTk):
     def __init__(self):
         super().__init__()
@@ -22,7 +27,7 @@ class app(tk.CTk):
 
         self.frames = {}
 
-        for Fr in (HomePage, PrivacyPage, ImageInputPage):
+        for Fr in (HomePage, PrivacyPage, ImageInputPage, InputSelect):
             PageName = Fr.__name__
             frame = Fr(parent=self.container, controller=self)
             self.frames[PageName] = frame
@@ -42,7 +47,7 @@ class HomePage(tk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
 
         self.mainTitle = tk.CTkLabel(self, text="One Click Story", font=tk.CTkFont("Segoe", 60, "normal"))
-        self.startButton = tk.CTkButton(self, text="Start", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageInputPage"))
+        self.startButton = tk.CTkButton(self, text="Start", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("InputSelect"))
         self.privacyButton = tk.CTkButton(self, text="Privacy", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("PrivacyPage"))
         self.exitButton = tk.CTkButton(self, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
@@ -80,9 +85,43 @@ class ImageInputPage(tk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
 
         self.mainTitle = tk.CTkLabel(self, text="Image Input", font=tk.CTkFont("Segoe", 60, "normal"))
+        self.imageHolder = tk.CTkFrame(self, width=400, height=300)
+        self.uploadedImage = tk.CTkLabel(self.imageHolder, width=400, height=300, text="")
+        self.imageButton = tk.CTkButton(self, text="Upload Image", font=tk.CTkFont("Segoe", 20, "normal"), command=self.imageUpload)
         self.exitButton = tk.CTkButton(self, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
         
         self.mainTitle.grid(row=1, column=0)
+        self.imageHolder.grid(row=2, column=0, pady=5)
+        self.uploadedImage.pack(expand=True, fill="both")
+        self.imageButton.grid(row=3, column=0, pady=5)
+        self.exitButton.grid(row=4, column=0, pady=5)
+
+    def imageUpload(self):
+        f_type_list = [("Image files", "*,jpg;*.png;*.jpeg")] # Creates the little "allowed file extensions" list for windows explorer
+        path = tk.filedialog.askopenfilename(filetypes=f_type_list)
+
+        if len(path):
+            pic = Image.open(path)
+            pic = pic.resize((400, 300)) # Format uploaded images to the optimal size for object recognition
+            self.uploadedImage.configure(image = tk.CTkImage(pic, size=(400,300)))
+        else:
+            return(False)
+        
+class InputSelect(tk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        self.grid_columnconfigure(0, weight=1)
+
+        self.mainTitle = tk.CTkLabel(self, text="Input Selection", font=tk.CTkFont("Segoe", 60, "normal"))
+        self.imageInput = tk.CTkButton(self, text="Add From PC", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageInputPage"))
+        self.cameraInput = tk.CTkButton(self, text="Add From Camera", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+        self.exitButton = tk.CTkButton(self, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+
+        self.mainTitle.grid(row=1, column=0)
+        self.imageInput.grid(row=2, column=0, pady=5)
+        self.cameraInput.grid(row=3, column=0, pady=5)
         self.exitButton.grid(row=4, column=0, pady=5)
 
 app().mainloop()
