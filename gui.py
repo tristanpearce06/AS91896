@@ -45,16 +45,22 @@ class HomePage(tk.CTkFrame):
         self.controller = controller
 
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
 
         self.mainTitle = tk.CTkLabel(self, text="One Click Story", font=tk.CTkFont("Segoe", 60, "normal"))
-        self.startButton = tk.CTkButton(self, text="Start", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("InputSelect"))
-        self.privacyButton = tk.CTkButton(self, text="Privacy", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("PrivacyPage"))
-        self.exitButton = tk.CTkButton(self, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+        
+        self.centerFrame = tk.CTkFrame(self, border_width=1)
+        self.centerFrame.grid_columnconfigure(0, weight=1)
+        self.startButton = tk.CTkButton(self.centerFrame, text="Start", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("InputSelect"))
+        self.privacyButton = tk.CTkButton(self.centerFrame, text="Privacy", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("PrivacyPage"))
+        self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
-        self.mainTitle.grid(row=1, column=0,)
-        self.startButton.grid(row=2, column=0, pady=5)
-        self.privacyButton.grid(row=3, column=0, pady=5)
-        self.exitButton.grid(row=4, column=0, pady=5)
+        self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
+
+        self.centerFrame.grid(row=2, column=0)
+        self.startButton.pack(padx=15, pady=(15, 5))
+        self.privacyButton.pack(padx=15, pady=5)
+        self.exitButton.pack(padx=15, pady=(5, 15))
 
 
 class PrivacyPage(tk.CTkFrame):
@@ -63,19 +69,23 @@ class PrivacyPage(tk.CTkFrame):
         self.controller = controller
 
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
 
         self.mainTitle = tk.CTkLabel(self, text="One Click Story", font=tk.CTkFont("Segoe", 60, "normal"))
-        self.privacyPolicyFrame = tk.CTkFrame(self)
-        self.privacyPolicy = tk.CTkTextbox(self.privacyPolicyFrame, font=tk.CTkFont("Segoe", 15, "normal"), width=500)
-        self.privacyPolicy.insert("0.0", privacyText*50)
-        self.backButton = tk.CTkButton(self, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("HomePage"))
-        self.exitButton = tk.CTkButton(self, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
-        self.mainTitle.grid(row=1, column=0)
-        self.privacyPolicyFrame.grid(row=2, column=0)
-        self.privacyPolicy.pack()
-        self.backButton.grid(row=3, column=0, pady=5)
-        self.exitButton.grid(row=4, column=0, pady=5)
+        self.centerFrame = tk.CTkFrame(self, border_width=1)
+        self.centerFrame.grid_columnconfigure(0, weight=1)
+        self.privacyPolicy = tk.CTkTextbox(self.centerFrame, font=tk.CTkFont("Segoe", 15, "normal"), width=500)
+        self.privacyPolicy.insert("0.0", privacyText*50)
+        self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("HomePage"))
+        self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+
+        self.mainTitle.place(relx=0.5, rely=0.075, anchor=CENTER)
+
+        self.centerFrame.grid(row=2, column=0)
+        self.privacyPolicy.pack(padx=15, pady=(15, 5))
+        self.backButton.pack(padx=15, pady=5)
+        self.exitButton.pack(padx=15, pady=(5, 15))
 
 class ImageInputPage(tk.CTkFrame):
     def __init__(self, parent, controller):
