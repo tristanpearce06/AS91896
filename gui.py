@@ -2,17 +2,12 @@ import tkinter
 from tkinter import CENTER
 import tkinter.messagebox
 import customtkinter as tk
-from PIL import Image, ImageTk
-from io import BytesIO
+from PIL import Image
 
 tk.set_appearance_mode("system")
 tk.set_default_color_theme("blue")
 
 privacyText = "Placeholder privacy text lol real is this real chat what lol seriously yo thats actually crazy what???"
-
-# Create general functions before initializing the UI
-
-
 
 
 class app(tk.CTk):
@@ -42,6 +37,7 @@ class app(tk.CTk):
 class HomePage(tk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
+
         self.controller = controller
 
         self.grid_columnconfigure(0, weight=1)
@@ -49,7 +45,7 @@ class HomePage(tk.CTkFrame):
 
         self.mainTitle = tk.CTkLabel(self, text="One Click Story", font=tk.CTkFont("Segoe", 60, "normal"))
         
-        self.centerFrame = tk.CTkFrame(self, border_width=1)
+        self.centerFrame = tk.CTkFrame(self, border_width=1, height=700)
         self.centerFrame.grid_columnconfigure(0, weight=1)
         self.startButton = tk.CTkButton(self.centerFrame, text="Start", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("InputSelect"))
         self.privacyButton = tk.CTkButton(self.centerFrame, text="Privacy", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("PrivacyPage"))
@@ -92,19 +88,32 @@ class ImageInputPage(tk.CTkFrame):
         super().__init__(parent)
         self.controller = controller
 
-        self.grid_columnconfigure(0, weight=1)
+        self.uploaded = False
 
-        self.mainTitle = tk.CTkLabel(self, text="Image Input", font=tk.CTkFont("Segoe", 60, "normal"))
-        self.imageHolder = tk.CTkFrame(self, width=400, height=300)
-        self.uploadedImage = tk.CTkLabel(self.imageHolder, width=400, height=300, text="")
-        self.imageButton = tk.CTkButton(self, text="Upload Image", font=tk.CTkFont("Segoe", 20, "normal"), command=self.imageUpload)
-        self.exitButton = tk.CTkButton(self, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+
+        #self.mainTitle = tk.CTkLabel(self, text="Image Input", font=tk.CTkFont("Segoe", 120, "normal"))
         
-        self.mainTitle.grid(row=1, column=0)
-        self.imageHolder.grid(row=2, column=0, pady=5)
+        self.centerFrame = tk.CTkFrame(self, border_width=1)
+        self.centerFrame.grid_columnconfigure(0, weight=1)
+
+        self.imageHolder = tk.CTkFrame(self.centerFrame, width=400, height=300)
+        self.uploadedImage = tk.CTkLabel(self.imageHolder, width=400, height=300, text="")
+
+        self.imageButton = tk.CTkButton(self.centerFrame, text="Upload Image", font=tk.CTkFont("Segoe", 20, "normal"), command=self.imageUpload)
+        self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit, state="disabled") # Default state is disable to ensure that user does not continue without an uploaded image
+        self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+        
+        #self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
+
+        self.centerFrame.grid(row=2, column=0)
+        self.imageHolder.pack(padx=15, pady=(15, 5))
         self.uploadedImage.pack(expand=True, fill="both")
-        self.imageButton.grid(row=3, column=0, pady=5)
-        self.exitButton.grid(row=4, column=0, pady=5)
+
+        self.imageButton.pack(padx=15, pady=(15, 5))
+        self.continueButton.pack(padx=15, pady=5)
+        self.exitButton.pack(padx=15, pady=(5, 15))
 
     def imageUpload(self):
         f_type_list = [("Image files", "*,jpg;*.png;*.jpeg")] # Creates the little "allowed file extensions" list for windows explorer
@@ -114,8 +123,10 @@ class ImageInputPage(tk.CTkFrame):
             pic = Image.open(path)
             pic = pic.resize((400, 300)) # Format uploaded images to the optimal size for object recognition
             self.uploadedImage.configure(image = tk.CTkImage(pic, size=(400,300)))
+            self.continueButton.configure(state="normal") # Activate the continue button once an image is uploaded
         else:
             return(False)
+            
         
 class InputSelect(tk.CTkFrame):
     def __init__(self, parent, controller):
