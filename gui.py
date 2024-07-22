@@ -9,7 +9,6 @@ tk.set_default_color_theme("blue")
 
 privacyText = "Placeholder privacy text lol real is this real chat what lol seriously yo thats actually crazy what???"
 
-
 class app(tk.CTk):
     def __init__(self):
         super().__init__()
@@ -19,6 +18,8 @@ class app(tk.CTk):
 
         self.container = tk.CTkFrame(self)
         self.container.pack(anchor=CENTER, expand=True)
+
+        self.uploadedImage = None
 
         self.frames = {}
 
@@ -32,6 +33,8 @@ class app(tk.CTk):
 
     def show_frame(self, pName):
         frame = self.frames[pName]
+        if pName == "ObjectRecPage" and self.uploadedImage:
+            frame.update_image(self.uploadedImage)
         frame.tkraise()
 
 class HomePage(tk.CTkFrame):
@@ -94,7 +97,7 @@ class ImageInputPage(tk.CTkFrame):
         self.grid_rowconfigure(2, weight=1)
 
         #self.mainTitle = tk.CTkLabel(self, text="Image Input", font=tk.CTkFont("Segoe", 120, "normal"))
-        
+
         self.centerFrame = tk.CTkFrame(self, border_width=1)
         self.centerFrame.grid_columnconfigure(0, weight=1)
 
@@ -122,6 +125,7 @@ class ImageInputPage(tk.CTkFrame):
         if len(path):
             pic = Image.open(path)
             pic = pic.resize((400, 300)) # Format uploaded images to the optimal size for object recognition
+            self.controller.uploadedImage = tk.CTkImage(pic, size=(400,300))
             self.uploadedImage.configure(image = tk.CTkImage(pic, size=(400,300)))
             self.continueButton.configure(state="normal") # Activate the continue button once an image is uploaded
         else:
@@ -167,23 +171,27 @@ class ObjectRecPage(tk.CTkFrame):
         self.centerFrame.grid_columnconfigure(0, weight=1)
 
         self.imageHolder = tk.CTkFrame(self.centerFrame, width=400, height=300)
-        self.uploadedImage = tk.CTkLabel(self.imageHolder, width=400, height=300, text="")
+        self.displayedImage = tk.CTkLabel(self.imageHolder, width=400, height=300, text="")
 
         self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=self.objectRec)
-        self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("HomePage"))
+        self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageInputPage"))
         self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
         self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
         
         self.centerFrame.grid(row=2, column=0)
         self.imageHolder.pack(padx=15, pady=(15, 5))
-        self.uploadedImage.pack(expand=True, fill="both")
+        self.displayedImage.pack(expand=True, fill="both")
 
         self.continueButton.pack(padx=15, pady=(15, 5))
         self.backButton.pack(padx=15, pady=5)
         self.exitButton.pack(padx=15, pady=(5, 15))
 
-    def objectRec(image):
+    def update_image(self, image):
+        self.displayedImage.configure(image=image)
+        self.displayedImage.image = image
+
+    def objectRec():
         print("test")
 
 app().mainloop()
