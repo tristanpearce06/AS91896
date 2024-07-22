@@ -4,6 +4,8 @@ import tkinter.messagebox
 import customtkinter as tk
 from PIL import Image
 
+import object_rec
+
 tk.set_appearance_mode("system")
 tk.set_default_color_theme("blue")
 
@@ -125,13 +127,12 @@ class ImageInputPage(tk.CTkFrame):
         if len(path):
             pic = Image.open(path)
             pic = pic.resize((400, 300)) # Format uploaded images to the optimal size for object recognition
-            self.controller.uploadedImage = tk.CTkImage(pic, size=(400,300))
+            self.controller.uploadedImage = pic
             self.uploadedImage.configure(image = tk.CTkImage(pic, size=(400,300)))
             self.continueButton.configure(state="normal") # Activate the continue button once an image is uploaded
         else:
             return(False)
-            
-        
+                    
 class InputSelect(tk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -188,10 +189,11 @@ class ObjectRecPage(tk.CTkFrame):
         self.exitButton.pack(padx=15, pady=(5, 15))
 
     def update_image(self, image):
-        self.displayedImage.configure(image=image)
+        self.displayedImage.configure(image=tk.CTkImage(image, size=(400,300)))
         self.displayedImage.image = image
 
-    def objectRec():
-        print("test")
+    def objectRec(self):
+        # Convert PIL image to CV2 for input :(
+        object_rec.captureFrame(2, self.controller.uploadedImage)
 
 app().mainloop()
