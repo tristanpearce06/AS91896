@@ -16,7 +16,7 @@ class app(tk.CTk):
         super().__init__()
 
         self.title("Photo Story")
-        self.geometry("800x500")
+        self.geometry("800x550")
 
         self.container = tk.CTkFrame(self)
         self.container.pack(anchor=CENTER, expand=True)
@@ -103,8 +103,8 @@ class ImageInputPage(tk.CTkFrame):
         self.centerFrame = tk.CTkFrame(self, border_width=1)
         self.centerFrame.grid_columnconfigure(0, weight=1)
 
-        self.imageHolder = tk.CTkFrame(self.centerFrame, width=400, height=300)
-        self.uploadedImage = tk.CTkLabel(self.imageHolder, width=400, height=300, text="")
+        self.imageHolder = tk.CTkFrame(self.centerFrame, width=400, height=400)
+        self.uploadedImage = tk.CTkLabel(self.imageHolder, width=400, height=400, text="")
 
         self.imageButton = tk.CTkButton(self.centerFrame, text="Upload Image", font=tk.CTkFont("Segoe", 20, "normal"), command=self.imageUpload)
         self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ObjectRecPage"), state="disabled") # Default state is disable to ensure that user does not continue without an uploaded image
@@ -128,7 +128,7 @@ class ImageInputPage(tk.CTkFrame):
             pic = Image.open(path)
             pic = pic.resize((400, 300)) # Format uploaded images to the optimal size for object recognition
             self.controller.uploadedImage = pic
-            self.uploadedImage.configure(image = tk.CTkImage(pic, size=(400,300)))
+            self.uploadedImage.configure(image = tk.CTkImage(pic, size=(400,400)))
             self.continueButton.configure(state="normal") # Activate the continue button once an image is uploaded
         else:
             return(False)
@@ -171,8 +171,8 @@ class ObjectRecPage(tk.CTkFrame):
         self.centerFrame = tk.CTkFrame(self, border_width=1)
         self.centerFrame.grid_columnconfigure(0, weight=1)
 
-        self.imageHolder = tk.CTkFrame(self.centerFrame, width=400, height=300)
-        self.displayedImage = tk.CTkLabel(self.imageHolder, width=400, height=300, text="")
+        self.imageHolder = tk.CTkFrame(self.centerFrame, width=400, height=400)
+        self.displayedImage = tk.CTkLabel(self.imageHolder, width=400, height=400, text="")
 
         self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=self.objectRec)
         self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageInputPage"))
@@ -189,11 +189,19 @@ class ObjectRecPage(tk.CTkFrame):
         self.exitButton.pack(padx=15, pady=(5, 15))
 
     def update_image(self, image):
-        self.displayedImage.configure(image=tk.CTkImage(image, size=(400,300)))
+        self.displayedImage.configure(image=tk.CTkImage(image, size=(400,400)))
         self.displayedImage.image = image
 
     def objectRec(self):
         # Convert PIL image to CV2 for input :(
-        object_rec.captureFrame(2, self.controller.uploadedImage)
+        modelresults = object_rec.captureFrame(2, self.controller.uploadedImage)
+
+        detected_obj = object_rec.returnFoundObjects(modelresults)
+        print(detected_obj)
+
+        modified_img = object_rec.modifyImage(modelresults, self.controller.uploadedImage)
+        print(modified_img)
+        formatted_img = Image.fromarray(modified_img)
+        self.displayedImage.configure(image=tk.CTkImage(formatted_img, size=(400,400)))
 
 app().mainloop()

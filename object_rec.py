@@ -93,7 +93,7 @@ classNames = ["person",
 def captureFrame(type, image):
     if type == 1:
         cap = cv2.VideoCapture(0)
-        ret, frame = cap.read()
+        frame = cap.read()
         cap.release()
         results = model(frame)
         return results
@@ -118,7 +118,8 @@ def returnFoundObjects(results):
 
 # Modifies the source image to include confidence score and bounding boxes
 
-def modifyImage(results, frames):
+def modifyImage(results, image):
+    frames = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGR)
     for result in results:
         for box in result.boxes:
                 # Extract bounding box coordinates
