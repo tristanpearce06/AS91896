@@ -93,7 +93,7 @@ classNames = ["person",
 def captureFrame(type, image):
     if type == 1:
         cap = cv2.VideoCapture(0)
-        frame = cap.read()
+        ret, frame = cap.read()
         cap.release()
         results = model(frame)
         return results

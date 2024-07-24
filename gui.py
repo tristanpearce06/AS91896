@@ -3,6 +3,9 @@ from tkinter import CENTER
 import tkinter.messagebox
 import customtkinter as tk
 from PIL import Image
+import threading # Used to multithread tasks which use an extended period to process so that the GUI does not freeze during processing
+import cv2 # Used to display webcam feed on the Camera Input page
+import time # Allows for time.sleep
 
 import object_rec
 
@@ -16,7 +19,7 @@ class app(tk.CTk):
         super().__init__()
 
         self.title("Photo Story")
-        self.geometry("800x550")
+        self.geometry("550x650")
 
         self.container = tk.CTkFrame(self)
         self.container.pack(anchor=CENTER, expand=True)
@@ -25,7 +28,7 @@ class app(tk.CTk):
 
         self.frames = {}
 
-        for Fr in (HomePage, PrivacyPage, ImageInputPage, InputSelect, ObjectRecPage):
+        for Fr in (HomePage, PrivacyPage, ImageInputPage, CameraInputPage, InputSelect, ObjectRecPage):
             PageName = Fr.__name__
             frame = Fr(parent=self.container, controller=self)
             self.frames[PageName] = frame
@@ -62,7 +65,6 @@ class HomePage(tk.CTkFrame):
         self.startButton.pack(padx=15, pady=(15, 5))
         self.privacyButton.pack(padx=15, pady=5)
         self.exitButton.pack(padx=15, pady=(5, 15))
-
 
 class PrivacyPage(tk.CTkFrame):
     def __init__(self, parent, controller):
@@ -132,6 +134,66 @@ class ImageInputPage(tk.CTkFrame):
             self.continueButton.configure(state="normal") # Activate the continue button once an image is uploaded
         else:
             return(False)
+        
+class CameraInputPage(tk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        self.uploaded = False
+        self.cameraActive = False
+        self.currentImage = False
+
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+
+        #self.mainTitle = tk.CTkLabel(self, text="Image Input", font=tk.CTkFont("Segoe", 120, "normal"))
+
+        self.centerFrame = tk.CTkFrame(self, border_width=1)
+        self.centerFrame.grid_columnconfigure(0, weight=1)
+
+        self.imageHolder = tk.CTkFrame(self.centerFrame, width=400, height=400)
+        self.uploadedImage = tk.CTkLabel(self.imageHolder, width=400, height=400, text="")
+
+        self.imageButton = tk.CTkButton(self.centerFrame, text="Capture Picture", font=tk.CTkFont("Segoe", 20, "normal"), command=self.cameraUpload)
+        self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ObjectRecPage"), state="disabled") # Default state is disable to ensure that user does not continue without an uploaded image
+        self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+        
+        #self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
+
+        self.centerFrame.grid(row=2, column=0)
+        self.imageHolder.pack(padx=15, pady=(15, 5))
+        self.uploadedImage.pack(expand=True, fill="both")
+
+        self.imageButton.pack(padx=15, pady=(15, 5))
+        self.continueButton.pack(padx=15, pady=5)
+        self.exitButton.pack(padx=15, pady=(5, 15))
+
+    def cameraUpload(self):
+        if self.cameraActive:
+            self.cameraActive = False
+            self.imageButton.configure(text="Capture Picture")
+            self.continueButton.configure(state="normal")
+            self.after_cancel(self.update_job)
+            self.cap.release()
+            cv2.destroyAllWindows()
+        else:
+            self.cameraActive = True
+            self.imageButton.configure(text="Stop Camera")
+            self.continueButton.configure(state="disabled")
+            self.cap = cv2.VideoCapture(0)
+            self.displayWebcam()
+
+    def displayWebcam(self):
+        if self.cameraActive:
+            ret, frame = self.cap.read()
+            if ret:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                frame = cv2.resize(frame, (400, 400))
+                img = Image.fromarray(frame)
+                self.currentImage = tk.CTkImage(img, size=(400,400))
+                self.uploadedImage.configure(image=self.currentImage)
+            self.update_job = self.after(10, self.displayWebcam)
                     
 class InputSelect(tk.CTkFrame):
     def __init__(self, parent, controller):
@@ -146,7 +208,7 @@ class InputSelect(tk.CTkFrame):
         self.centerFrame = tk.CTkFrame(self, border_width=1)
         self.centerFrame.grid_columnconfigure(0, weight=1)
         self.imageInput = tk.CTkButton(self.centerFrame, text="Add From PC", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageInputPage"))
-        self.cameraInput = tk.CTkButton(self.centerFrame, text="Add From Camera", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+        self.cameraInput = tk.CTkButton(self.centerFrame, text="Add From Camera", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("CameraInputPage"))
         self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("HomePage"))
         self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
@@ -166,7 +228,7 @@ class ObjectRecPage(tk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
 
-        self.mainTitle = tk.CTkLabel(self, text="Object Recognition", font=tk.CTkFont("Segoe", 60, "normal"))
+        # self.mainTitle = tk.CTkLabel(self, text="Object Recognition", font=tk.CTkFont("Segoe", 60, "normal"))
         
         self.centerFrame = tk.CTkFrame(self, border_width=1)
         self.centerFrame.grid_columnconfigure(0, weight=1)
@@ -174,17 +236,20 @@ class ObjectRecPage(tk.CTkFrame):
         self.imageHolder = tk.CTkFrame(self.centerFrame, width=400, height=400)
         self.displayedImage = tk.CTkLabel(self.imageHolder, width=400, height=400, text="")
 
-        self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=self.objectRec)
+        self.continueButton = tk.CTkButton(self.centerFrame, text="Detect Objects", font=tk.CTkFont("Segoe", 20, "normal"), command=self.startObjectRecThread)
         self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageInputPage"))
         self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
-        self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
+        self.progressBar = tk.CTkProgressBar(self.centerFrame, orientation="horizontal", mode="determinate", determinate_speed=0.15)
+        self.progressBar.set(0)
+        # self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
         
         self.centerFrame.grid(row=2, column=0)
         self.imageHolder.pack(padx=15, pady=(15, 5))
         self.displayedImage.pack(expand=True, fill="both")
 
-        self.continueButton.pack(padx=15, pady=(15, 5))
+        self.progressBar.pack(padx=15, pady=(15,5))
+        self.continueButton.pack(padx=15, pady=5)
         self.backButton.pack(padx=15, pady=5)
         self.exitButton.pack(padx=15, pady=(5, 15))
 
@@ -192,16 +257,27 @@ class ObjectRecPage(tk.CTkFrame):
         self.displayedImage.configure(image=tk.CTkImage(image, size=(400,400)))
         self.displayedImage.image = image
 
+    def startObjectRecThread(self):
+        thr = threading.Thread(target=self.objectRec)
+        thr.start()
+
     def objectRec(self):
         # Convert PIL image to CV2 for input :(
-        modelresults = object_rec.captureFrame(2, self.controller.uploadedImage)
+        self.progressBar.configure(progress_color = "#0C955A")
+        self.progressBar.start()
 
+        modelresults = object_rec.captureFrame(2, self.controller.uploadedImage)
         detected_obj = object_rec.returnFoundObjects(modelresults)
         print(detected_obj)
+        self.progressBar.step()
 
         modified_img = object_rec.modifyImage(modelresults, self.controller.uploadedImage)
+
         print(modified_img)
         formatted_img = Image.fromarray(modified_img)
         self.displayedImage.configure(image=tk.CTkImage(formatted_img, size=(400,400)))
+
+        self.progressBar.set(1)
+        self.progressBar.stop()
 
 app().mainloop()

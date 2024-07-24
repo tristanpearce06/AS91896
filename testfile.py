@@ -18,12 +18,8 @@ import image_model
 
 print("Capturing frame")
 
-ret, frame = object_rec.captureFrame()
 
-print("frame captured")
-print("creating model")
-
-modelresults = object_rec.model(frame)
+modelresults = object_rec.captureFrame(1, None)
 
 print("model created")
 print("finding objects")
@@ -34,9 +30,9 @@ print("objects found")
 
 print(detected_obj)
 
-modified_img = object_rec.modifyImage(modelresults, frame)
+#modified_img = object_rec.modifyImage(modelresults, frame)
 
-object_rec.displayWindow(modified_img)
+#object_rec.displayWindow(modified_img)
 
 print("Generating story")
 
