@@ -142,7 +142,8 @@ class CameraInputPage(tk.CTkFrame):
 
         self.uploaded = False
         self.cameraActive = False
-        self.currentImage = False
+        self.currentImage = None
+        self.nakedImage = None
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
@@ -176,6 +177,7 @@ class CameraInputPage(tk.CTkFrame):
             self.continueButton.configure(state="normal")
             self.after_cancel(self.update_job)
             self.cap.release()
+            self.controller.uploadedImage = self.nakedImage
             cv2.destroyAllWindows()
         else:
             self.cameraActive = True
@@ -191,6 +193,7 @@ class CameraInputPage(tk.CTkFrame):
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 frame = cv2.resize(frame, (400, 400))
                 img = Image.fromarray(frame)
+                self.nakedImage = img
                 self.currentImage = tk.CTkImage(img, size=(400,400))
                 self.uploadedImage.configure(image=self.currentImage)
             self.update_job = self.after(10, self.displayWebcam)
