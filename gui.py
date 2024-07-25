@@ -7,6 +7,7 @@ import threading # Used to multithread tasks which use an extended period to pro
 import cv2 # Used to display webcam feed on the Camera Input page
 import time # Allows for time.sleep
 
+import std_func as sdf
 import object_rec
 import chat_model
 
@@ -42,6 +43,8 @@ class app(tk.CTk):
         frame = self.frames[pName]
         if pName == "ObjectRecPage" and self.uploadedImage:
             frame.update_image(self.uploadedImage)
+        elif pName == "StoryGenerator" and self.objectsDict:
+            frame.updateObjList(self.objectsDict)
         frame.tkraise()
 
 class HomePage(tk.CTkFrame):
@@ -284,8 +287,8 @@ class ObjectRecPage(tk.CTkFrame):
         formatted_img = Image.fromarray(modified_img)
         self.displayedImage.configure(image=tk.CTkImage(formatted_img, size=(400,400)))
 
-        self.progressBar.set(1)
         self.progressBar.stop()
+        self.progressBar.set(1)
         self.continueButton.configure(state="normal")
 
 class StoryGenerator(tk.CTkFrame):
@@ -300,22 +303,45 @@ class StoryGenerator(tk.CTkFrame):
 
         self.centerFrame = tk.CTkFrame(self, border_width=1)
         self.centerFrame.grid_columnconfigure(0, weight=1)
+        
+        self.objectList = tk.CTkLabel(self.centerFrame, text="Objects List:", font=tk.CTkFont("Segoe", 20, "normal"))
+        
         self.generatedStory = tk.CTkTextbox(self.centerFrame, font=tk.CTkFont("Segoe", 15, "normal"), width=500)
-        self.generateButton = tk.CTkButton(self.centerFrame, text="Generate Story", font=tk.CTkFont("Segoe", 20, "normal"), command=self.generateStory)
+
+        self.progressBar = tk.CTkProgressBar(self.centerFrame, orientation="horizontal", mode="determinate", determinate_speed=0.15)
+        self.progressBar.set(0)
+
+        self.generateButton = tk.CTkButton(self.centerFrame, text="Generate Story", font=tk.CTkFont("Segoe", 20, "normal"), command=self.startStoryGenThread)
         self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ObjectRecPage"))
         self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
         self.mainTitle.place(relx=0.5, rely=0.075, anchor=CENTER)
 
         self.centerFrame.grid(row=2, column=0)
-        self.generatedStory.pack(padx=15, pady=(15, 5))
+        self.objectList.pack(padx=15, pady=(15,5))
+        self.generatedStory.pack(padx=15, pady=5)
+        self.progressBar.pack(padx=15, pady=5)
         self.generateButton.pack(padx=15, pady=5)
         self.backButton.pack(padx=15, pady=5)
         self.exitButton.pack(padx=15, pady=(5, 15))
 
+    def updateObjList(self, text):
+        finalString = sdf.std_return_dict_as_single_string(text)
+        self.objectList.configure(text=finalString.title())
+        self.objectList._text = text
+
+    def startStoryGenThread(self):
+        thr = threading.Thread(target=self.generateStory)
+        thr.start()
+
     def generateStory(self):
+        self.generatedStory.delete(0.0)
+        self.progressBar.configure(progress_color = "#0C955A")
+        self.progressBar.start()
         storyReturn = chat_model.gen_story(self.controller.objectsDict)
         print(storyReturn)
+        self.progressBar.stop()
+        self.progressBar.set(1)
         self.generatedStory.insert(0.0, storyReturn)
 
 app().mainloop()
