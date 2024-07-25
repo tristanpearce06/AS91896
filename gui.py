@@ -8,6 +8,7 @@ import cv2 # Used to display webcam feed on the Camera Input page
 import time # Allows for time.sleep
 
 import object_rec
+import chat_model
 
 tk.set_appearance_mode("system")
 tk.set_default_color_theme("blue")
@@ -25,10 +26,11 @@ class app(tk.CTk):
         self.container.pack(anchor=CENTER, expand=True)
 
         self.uploadedImage = None
+        self.objectsDict = None
 
         self.frames = {}
 
-        for Fr in (HomePage, PrivacyPage, ImageInputPage, CameraInputPage, InputSelect, ObjectRecPage):
+        for Fr in (HomePage, PrivacyPage, ImageInputPage, CameraInputPage, InputSelect, ObjectRecPage, StoryGenerator):
             PageName = Fr.__name__
             frame = Fr(parent=self.container, controller=self)
             self.frames[PageName] = frame
@@ -176,8 +178,8 @@ class CameraInputPage(tk.CTkFrame):
             self.imageButton.configure(text="Capture Picture")
             self.continueButton.configure(state="normal")
             self.after_cancel(self.update_job)
-            self.cap.release()
             self.controller.uploadedImage = self.nakedImage
+            self.cap.release()
             cv2.destroyAllWindows()
         else:
             self.cameraActive = True
@@ -239,8 +241,9 @@ class ObjectRecPage(tk.CTkFrame):
         self.imageHolder = tk.CTkFrame(self.centerFrame, width=400, height=400)
         self.displayedImage = tk.CTkLabel(self.imageHolder, width=400, height=400, text="")
 
-        self.continueButton = tk.CTkButton(self.centerFrame, text="Detect Objects", font=tk.CTkFont("Segoe", 20, "normal"), command=self.startObjectRecThread)
-        self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageInputPage"))
+        self.detectButton = tk.CTkButton(self.centerFrame, text="Detect Objects", font=tk.CTkFont("Segoe", 20, "normal"), command=self.startObjectRecThread)
+        self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("StoryGenerator"))
+        self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("InputSelect"))
         self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
         self.progressBar = tk.CTkProgressBar(self.centerFrame, orientation="horizontal", mode="determinate", determinate_speed=0.15)
@@ -252,6 +255,7 @@ class ObjectRecPage(tk.CTkFrame):
         self.displayedImage.pack(expand=True, fill="both")
 
         self.progressBar.pack(padx=15, pady=(15,5))
+        self.detectButton.pack(padx=15, pady=5)
         self.continueButton.pack(padx=15, pady=5)
         self.backButton.pack(padx=15, pady=5)
         self.exitButton.pack(padx=15, pady=(5, 15))
@@ -271,16 +275,43 @@ class ObjectRecPage(tk.CTkFrame):
 
         modelresults = object_rec.captureFrame(2, self.controller.uploadedImage)
         detected_obj = object_rec.returnFoundObjects(modelresults)
-        print(detected_obj)
+        self.controller.objectsDict = detected_obj
+        print(self.controller.objectsDict)
         self.progressBar.step()
 
         modified_img = object_rec.modifyImage(modelresults, self.controller.uploadedImage)
 
-        print(modified_img)
         formatted_img = Image.fromarray(modified_img)
         self.displayedImage.configure(image=tk.CTkImage(formatted_img, size=(400,400)))
 
         self.progressBar.set(1)
         self.progressBar.stop()
+
+class StoryGenerator(tk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+
+        self.mainTitle = tk.CTkLabel(self, text="Story Generator", font=tk.CTkFont("Segoe", 60, "normal"))
+
+        self.centerFrame = tk.CTkFrame(self, border_width=1)
+        self.centerFrame.grid_columnconfigure(0, weight=1)
+        self.generatedStory = tk.CTkTextbox(self.centerFrame, font=tk.CTkFont("Segoe", 15, "normal"), width=500)
+        self.generateButton = tk.CTkButton(self.centerFrame, text="Generate Story", font=tk.CTkFont("Segoe", 20, "normal"), command=self.generateStory)
+        self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ObjectRecPage"))
+        self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+
+        self.mainTitle.place(relx=0.5, rely=0.075, anchor=CENTER)
+
+        self.centerFrame.grid(row=2, column=0)
+        self.generatedStory.pack(padx=15, pady=(15, 5))
+        self.backButton.pack(padx=15, pady=5)
+        self.exitButton.pack(padx=15, pady=(5, 15))
+
+    def generateStory(self):
+        print()
 
 app().mainloop()
