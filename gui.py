@@ -242,7 +242,7 @@ class ObjectRecPage(tk.CTkFrame):
         self.displayedImage = tk.CTkLabel(self.imageHolder, width=400, height=400, text="")
 
         self.detectButton = tk.CTkButton(self.centerFrame, text="Detect Objects", font=tk.CTkFont("Segoe", 20, "normal"), command=self.startObjectRecThread)
-        self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("StoryGenerator"))
+        self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("StoryGenerator"), state="disabled")
         self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("InputSelect"))
         self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
@@ -286,6 +286,7 @@ class ObjectRecPage(tk.CTkFrame):
 
         self.progressBar.set(1)
         self.progressBar.stop()
+        self.continueButton.configure(state="normal")
 
 class StoryGenerator(tk.CTkFrame):
     def __init__(self, parent, controller):
@@ -308,10 +309,13 @@ class StoryGenerator(tk.CTkFrame):
 
         self.centerFrame.grid(row=2, column=0)
         self.generatedStory.pack(padx=15, pady=(15, 5))
+        self.generateButton.pack(padx=15, pady=5)
         self.backButton.pack(padx=15, pady=5)
         self.exitButton.pack(padx=15, pady=(5, 15))
 
     def generateStory(self):
-        print()
+        storyReturn = chat_model.gen_story(self.controller.objectsDict)
+        print(storyReturn)
+        self.generatedStory.insert(0.0, storyReturn)
 
 app().mainloop()
