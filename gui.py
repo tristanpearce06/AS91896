@@ -10,6 +10,7 @@ import time # Allows for time.sleep
 import std_func as sdf
 import object_rec
 import chat_model
+import image_model
 
 tk.set_appearance_mode("system")
 tk.set_default_color_theme("blue")
@@ -28,10 +29,11 @@ class app(tk.CTk):
 
         self.uploadedImage = None
         self.objectsDict = None
+        self.genStory = None
 
         self.frames = {}
 
-        for Fr in (HomePage, PrivacyPage, ImageInputPage, CameraInputPage, InputSelect, ObjectRecPage, StoryGenerator):
+        for Fr in (HomePage, PrivacyPage, ImageInputPage, CameraInputPage, InputSelect, ObjectRecPage, StoryGenerator, ImageGenerator):
             PageName = Fr.__name__
             frame = Fr(parent=self.container, controller=self)
             self.frames[PageName] = frame
@@ -45,6 +47,10 @@ class app(tk.CTk):
             frame.update_image(self.uploadedImage)
         elif pName == "StoryGenerator" and self.objectsDict:
             frame.updateObjList(self.objectsDict)
+        elif pName == "ImageGenerator":
+            self.geometry("1050x650")
+            frame.createStoryFrame()
+
         frame.tkraise()
 
 class HomePage(tk.CTkFrame):
@@ -312,6 +318,7 @@ class StoryGenerator(tk.CTkFrame):
         self.progressBar.set(0)
 
         self.generateButton = tk.CTkButton(self.centerFrame, text="Generate Story", font=tk.CTkFont("Segoe", 20, "normal"), command=self.startStoryGenThread)
+        self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageGenerator"))
         self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ObjectRecPage"))
         self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
 
@@ -322,6 +329,7 @@ class StoryGenerator(tk.CTkFrame):
         self.generatedStory.pack(padx=15, pady=5)
         self.progressBar.pack(padx=15, pady=5)
         self.generateButton.pack(padx=15, pady=5)
+        self.continueButton.pack(padx=15, pady=5)
         self.backButton.pack(padx=15, pady=5)
         self.exitButton.pack(padx=15, pady=(5, 15))
 
@@ -335,13 +343,72 @@ class StoryGenerator(tk.CTkFrame):
         thr.start()
 
     def generateStory(self):
-        self.generatedStory.delete(0.0)
+        self.generatedStory.delete(1.0, tk.END)
         self.progressBar.configure(progress_color = "#0C955A")
         self.progressBar.start()
         storyReturn = chat_model.gen_story(self.controller.objectsDict)
+        self.controller.genStory = storyReturn
         print(storyReturn)
         self.progressBar.stop()
         self.progressBar.set(1)
         self.generatedStory.insert(0.0, storyReturn)
 
+class ImageGenerator(tk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        self.uploaded = False
+
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+
+        #self.mainTitle = tk.CTkLabel(self, text="Image Input", font=tk.CTkFont("Segoe", 120, "normal"))
+
+        self.centerFrame = tk.CTkFrame(self, border_width=1)
+        self.centerFrame.grid_columnconfigure(0, weight=1)
+
+        self.imageHolder = tk.CTkFrame(self.centerFrame, width=400, height=400)
+        self.uploadedImage = tk.CTkLabel(self.imageHolder, width=400, height=400, text="")
+
+        self.imageButton = tk.CTkButton(self.centerFrame, text="Generate Image", font=tk.CTkFont("Segoe", 20, "normal"), command=self.startImageGenThread)
+        self.continueButton = tk.CTkButton(self.centerFrame, text="Finish", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ObjectRecPage"), state="disabled") # Default state is disable to ensure that user does not continue without a generated image
+        self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
+        
+        #self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
+
+        self.centerFrame.grid(row=2, column=0)
+
+        self.imageHolder.pack(padx=15, pady=(15, 5))
+        self.uploadedImage.pack(expand=True, fill="both")
+
+        self.progressBar = tk.CTkProgressBar(self.centerFrame, orientation="horizontal", mode="determinate", determinate_speed=0.15)
+        self.progressBar.set(0)
+
+        self.progressBar.pack(padx=15, pady=5)
+        self.imageButton.pack(padx=15, pady=(15, 5))
+        self.continueButton.pack(padx=15, pady=5)
+        self.exitButton.pack(padx=15, pady=(5, 15))
+
+    def createStoryFrame(self):
+        self.storyFrame = tk.CTkFrame(self, border_width=1)
+        self.storyFrame.grid_columnconfigure(0, weight=1)
+        self.generatedStory = tk.CTkTextbox(self.storyFrame, font=tk.CTkFont("Segoe", 20, "normal"), width=500)
+        self.storyFrame.grid(row=2, column=1)
+        self.generatedStory.pack(padx=15, pady=5)
+        
+        self.generatedStory.insert(0.0, self.controller.genStory)
+
+    def startImageGenThread(self):
+        thr = threading.Thread(target=self.generateImage)
+        thr.start()
+
+    def generateImage(self):
+        self.progressBar.configure(progress_color = "#0C955A")
+        self.progressBar.start()
+        genImage = image_model.generate_image_from_text(self.controller.genStory)
+        self.uploadedImage.configure(image=tk.CTkImage(genImage, size=(400,400)))
+        self.progressBar.stop()
+        self.progressBar.set(1)
+    
 app().mainloop()
