@@ -385,8 +385,8 @@ class ImageGenerator(tk.CTkFrame):
         self.progressBar = tk.CTkProgressBar(self.centerFrame, orientation="horizontal", mode="determinate", determinate_speed=0.15)
         self.progressBar.set(0)
 
-        self.progressBar.pack(padx=15, pady=5)
-        self.imageButton.pack(padx=15, pady=(15, 5))
+        self.progressBar.pack(padx=15, pady=(15, 5))
+        self.imageButton.pack(padx=15, pady=5)
         self.continueButton.pack(padx=15, pady=5)
         self.exitButton.pack(padx=15, pady=(5, 15))
 
@@ -410,5 +410,6 @@ class ImageGenerator(tk.CTkFrame):
         self.uploadedImage.configure(image=tk.CTkImage(genImage, size=(400,400)))
         self.progressBar.stop()
         self.progressBar.set(1)
+        self.continueButton.configure(state="normal")
     
 app().mainloop()
