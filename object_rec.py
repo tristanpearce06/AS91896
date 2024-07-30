@@ -1,6 +1,7 @@
 from ultralytics import YOLO
 import cv2
 import std_func as sdf
+import numpy
 
 # Decide on model and import a list of possible objects detected by chosen model
 
@@ -89,11 +90,22 @@ classNames = ["person",
 
 # Capture a single frame from the user's camera / Capture all usable data from an image
 
-def captureFrame():
-    cap = cv2.VideoCapture(0)
-    ret, frame = cap.read()
-    cap.release()
-    return ret, frame
+def captureFrame(type, image):
+    if type == 1:
+        cap = cv2.VideoCapture(0)
+        ret, frame = cap.read()
+        cap.release()
+        results = model(frame)
+        return results
+    elif type == 2:
+        opencvImage = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGR)
+        results = model(opencvImage)
+        return results
+
+# def captureFromImage(image):
+#     opencvImage = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGR)
+#     results = model(opencvImage)
+#     return results
 
 # Creates a dictionary with all detected objects in format {key:num}
 
@@ -106,7 +118,8 @@ def returnFoundObjects(results):
 
 # Modifies the source image to include confidence score and bounding boxes
 
-def modifyImage(results, frames):
+def modifyImage(results, image):
+    frames = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGR)
     for result in results:
         for box in result.boxes:
                 # Extract bounding box coordinates
