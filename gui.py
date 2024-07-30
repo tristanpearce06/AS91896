@@ -5,7 +5,6 @@ import customtkinter as tk
 from PIL import Image
 import threading # Used to multithread tasks which use an extended period to process so that the GUI does not freeze during processing
 import cv2 # Used to display webcam feed on the Camera Input page
-import time # Allows for time.sleep
 
 import std_func as sdf
 import object_rec
