@@ -114,8 +114,6 @@ class ImageInputPage(tk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
 
-        #self.mainTitle = tk.CTkLabel(self, text="Image Input", font=tk.CTkFont("Segoe", 120, "normal"))
-
         self.centerFrame = tk.CTkFrame(self, border_width=1)
         self.centerFrame.grid_columnconfigure(0, weight=1)
 
@@ -125,8 +123,6 @@ class ImageInputPage(tk.CTkFrame):
         self.imageButton = tk.CTkButton(self.centerFrame, text="Upload Image", font=tk.CTkFont("Segoe", 20, "normal"), command=self.imageUpload)
         self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ObjectRecPage"), state="disabled") # Default state is disable to ensure that user does not continue without an uploaded image
         self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
-        
-        #self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
 
         self.centerFrame.grid(row=2, column=0)
         self.imageHolder.pack(padx=15, pady=(15, 5))
@@ -162,8 +158,6 @@ class CameraInputPage(tk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
 
-        #self.mainTitle = tk.CTkLabel(self, text="Image Input", font=tk.CTkFont("Segoe", 120, "normal"))
-
         self.centerFrame = tk.CTkFrame(self, border_width=1)
         self.centerFrame.grid_columnconfigure(0, weight=1)
 
@@ -173,8 +167,6 @@ class CameraInputPage(tk.CTkFrame):
         self.imageButton = tk.CTkButton(self.centerFrame, text="Capture Picture", font=tk.CTkFont("Segoe", 20, "normal"), command=self.cameraUpload)
         self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ObjectRecPage"), state="disabled") # Default state is disable to ensure that user does not continue without an uploaded image
         self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
-        
-        #self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
 
         self.centerFrame.grid(row=2, column=0)
         self.imageHolder.pack(padx=15, pady=(15, 5))
@@ -245,8 +237,6 @@ class ObjectRecPage(tk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
 
-        # self.mainTitle = tk.CTkLabel(self, text="Object Recognition", font=tk.CTkFont("Segoe", 60, "normal"))
-        
         self.centerFrame = tk.CTkFrame(self, border_width=1)
         self.centerFrame.grid_columnconfigure(0, weight=1)
 
@@ -260,7 +250,6 @@ class ObjectRecPage(tk.CTkFrame):
 
         self.progressBar = tk.CTkProgressBar(self.centerFrame, orientation="horizontal", mode="determinate", determinate_speed=0.15)
         self.progressBar.set(0)
-        # self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
         
         self.centerFrame.grid(row=2, column=0)
         self.imageHolder.pack(padx=15, pady=(15, 5))
@@ -281,7 +270,6 @@ class ObjectRecPage(tk.CTkFrame):
         thr.start()
 
     def objectRec(self):
-        # Convert PIL image to CV2 for input :(
         self.progressBar.configure(progress_color = "#0C955A")
         self.progressBar.start()
 
@@ -367,8 +355,6 @@ class ImageGenerator(tk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
 
-        #self.mainTitle = tk.CTkLabel(self, text="Image Input", font=tk.CTkFont("Segoe", 120, "normal"))
-
         self.centerFrame = tk.CTkFrame(self, border_width=1)
         self.centerFrame.grid_columnconfigure(0, weight=1)
 
@@ -378,9 +364,7 @@ class ImageGenerator(tk.CTkFrame):
         self.imageButton = tk.CTkButton(self.centerFrame, text="Generate Image", font=tk.CTkFont("Segoe", 20, "normal"), command=self.startImageGenThread)
         self.continueButton = tk.CTkButton(self.centerFrame, text="Finish", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("FinalPage"), state="disabled") # Default state is disable to ensure that user does not continue without a generated image
         self.exitButton = tk.CTkButton(self.centerFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
-        
-        #self.mainTitle.place(relx=0.5, rely=0.1, anchor=CENTER)
-
+    
         self.centerFrame.grid(row=2, column=0)
 
         self.imageHolder.pack(padx=15, pady=(15, 5))
@@ -425,15 +409,11 @@ class FinalPage(tk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
 
-        self.mainTitle = tk.CTkLabel(self, text="Final Output", font=tk.CTkFont("Segoe", 120, "normal"))
-
         self.centerFrame = tk.CTkFrame(self, border_width=1)
         self.centerFrame.grid_columnconfigure(0, weight=1)
 
         self.uploadedImageHolder = tk.CTkFrame(self.centerFrame, width=400, height=400)
         self.uploadedImage = tk.CTkLabel(self.uploadedImageHolder, width=400, height=400, text="")
-        
-        self.mainTitle.place(relx=0.7, rely=0.1, anchor=CENTER)
 
         self.centerFrame.grid(row=2, column=0)
 
@@ -443,13 +423,8 @@ class FinalPage(tk.CTkFrame):
     def createSecondColumn(self):
         self.storyFrame = tk.CTkFrame(self, border_width=1)
         self.storyFrame.grid_columnconfigure(0, weight=1)
-        # self.generatedStory = tk.CTkTextbox(self.storyFrame, font=tk.CTkFont("Segoe", 20, "normal"), width=500)
-        self.storyFrame.grid(row=2, column=1)
-        # self.generatedStory.pack(padx=15, pady=5)
         
-        # self.generatedStory.insert(0.0, self.controller.genStory)
-
-        # Create holder frame and image for generated image
+        self.storyFrame.grid(row=2, column=1)
 
         self.generatedImageHolder = tk.CTkFrame(self.storyFrame, width=400, height=400)
         self.generatedImageHolder.pack(padx=15, pady=15)
