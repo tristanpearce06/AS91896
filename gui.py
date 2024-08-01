@@ -27,6 +27,8 @@ class app(tk.CTk):
         self.container.pack(anchor=CENTER, expand=True)
 
         self.uploadedImage = None
+        self.generatedImage = None
+        self.detectedImage = None
         self.objectsDict = None
         self.genStory = None
 
@@ -292,6 +294,7 @@ class ObjectRecPage(tk.CTkFrame):
         modified_img = object_rec.modifyImage(modelresults, self.controller.uploadedImage)
 
         formatted_img = Image.fromarray(modified_img)
+        self.controller.detectedImage = formatted_img
         self.displayedImage.configure(image=tk.CTkImage(formatted_img, size=(400,400)))
 
         self.progressBar.stop()
@@ -408,6 +411,7 @@ class ImageGenerator(tk.CTkFrame):
         self.progressBar.configure(progress_color = "#0C955A")
         self.progressBar.start()
         genImage = image_model.generate_image_from_text(self.controller.genStory)
+        self.controller.generatedImage = genImage
         self.uploadedImage.configure(image=tk.CTkImage(genImage, size=(400,400)))
         self.progressBar.stop()
         self.progressBar.set(1)
@@ -433,7 +437,7 @@ class FinalPage(tk.CTkFrame):
 
         self.centerFrame.grid(row=2, column=0)
 
-        self.uploadedImageHolder.pack(padx=15, pady=(15, 5))
+        self.uploadedImageHolder.pack(padx=15, pady=15)
         self.uploadedImage.pack(expand=True, fill="both")
 
     def createSecondColumn(self):
@@ -454,7 +458,14 @@ class FinalPage(tk.CTkFrame):
 
         self.bottomFrame = tk.CTkFrame(self, width=600, height=50)
         self.bottomFrame.grid(row=3, column=0, columnspan=2)
+        self.generatedStory = tk.CTkTextbox(self.bottomFrame, font=tk.CTkFont("Segoe", 15, "normal"), width=500, height=100)
+        self.generatedStory.pack(padx=15, pady=5)
+        self.generatedStory.insert(0.0, self.controller.genStory)
+
         self.exitButton = tk.CTkButton(self.bottomFrame, text="Exit", font=tk.CTkFont("Segoe", 20, "normal"), command=self.quit)
         self.exitButton.pack(padx=15, pady=(5, 15))
-    
+
+        self.generatedImage.configure(image=tk.CTkImage(self.controller.generatedImage, size=(400,400)))
+        self.uploadedImage.configure(image=tk.CTkImage(self.controller.detectedImage, size=(400,400)))
+
 app().mainloop()
