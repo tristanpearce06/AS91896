@@ -427,6 +427,7 @@ class ObjectRecPage(tk.CTkFrame):
         thr.start()
 
     def objectRec(self):
+        self.detectButton.configure(state="disabled")
         # Configure and start the progress bar
         self.progressBar.configure(progress_color = "#0C955A")
         self.progressBar.start()
@@ -449,6 +450,7 @@ class ObjectRecPage(tk.CTkFrame):
         # Stop the progress bar and enable the continue button
         self.progressBar.stop()
         self.progressBar.set(1)
+        self.detectButton.configure(state="normal")
         self.continueButton.configure(state="normal")
 
 class StoryGenerator(tk.CTkFrame):
@@ -488,7 +490,7 @@ class StoryGenerator(tk.CTkFrame):
         self.generateButton = tk.CTkButton(self.centerFrame, text="Generate Story", font=tk.CTkFont("Segoe", 20, "normal"), command=self.startStoryGenThread)
         
         # Create a 'Continue' button to proceed to the ImageGenerator page
-        self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageGenerator"))
+        self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ImageGenerator"), state="disabled")
         
         # Create a 'Back' button to return to the ObjectRecPage
         self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ObjectRecPage"))
@@ -521,6 +523,7 @@ class StoryGenerator(tk.CTkFrame):
         thr.start()
 
     def generateStory(self):
+        self.generateButton.configure(state="disabled")
         # Clear the text box and start the progress bar
         self.generatedStory.delete(1.0, tk.END)
         self.progressBar.configure(progress_color = "#0C955A")
@@ -534,7 +537,9 @@ class StoryGenerator(tk.CTkFrame):
         # Stop the progress bar and display the generated story
         self.progressBar.stop()
         self.progressBar.set(1)
+        self.continueButton.configure(state="normal")
         self.generatedStory.insert(0.0, storyReturn)
+        self.generateButton.configure(state="normal")
 
 class ImageGenerator(tk.CTkFrame):
     """
@@ -608,6 +613,7 @@ class ImageGenerator(tk.CTkFrame):
         # Configure and start the progress bar
         self.progressBar.configure(progress_color = "#0C955A")
         self.progressBar.start()
+        self.imageButton.configure(state="disabled")
 
         # Generate the image based on the generated story
         genImage = image_model.generate_image_from_text(self.controller.genStory)
@@ -620,6 +626,7 @@ class ImageGenerator(tk.CTkFrame):
         self.progressBar.stop()
         self.progressBar.set(1)
         self.continueButton.configure(state="normal")
+        self.imageButton.configure(state="normal")
 
 class FinalPage(tk.CTkFrame):
     """
