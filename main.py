@@ -20,7 +20,7 @@ tk.set_appearance_mode("system")
 tk.set_default_color_theme("blue")
 
 # Placeholder privacy text
-privacyText = "Placeholder privacy text lol real is this real chat what lol seriously yo thats actually crazy what???"
+privacyText = "What happens to your images (and your data)?\n\nThe application does not store any images or data.\nAll images and data are processed locally on your device.\nThe application uses object recognition to identify objects in the uploaded image.\nThese identified objects are then used to generate a story, and this story is used to generate an image.\nThe generated image and story are displayed to the user, which is deleted as soon as the application ends as these both are stored in memory.\nThe application does NOT collect or store any personal information."
 
 # Main application class
 class app(tk.CTk):
@@ -156,7 +156,7 @@ class PrivacyPage(tk.CTkFrame):
         # Create a text widget to display the privacy policy
         self.privacyPolicy = tk.CTkTextbox(self.centerFrame, font=tk.CTkFont("Segoe", 15, "normal"), width=500)
         # Insert the privacy policy text into the text widget
-        self.privacyPolicy.insert("0.0", privacyText * 50)
+        self.privacyPolicy.insert("0.0", privacyText)
 
         # Create a 'Back' button to return to the HomePage
         self.backButton = tk.CTkButton(self.centerFrame, text="Back", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda: controller.show_frame("HomePage"))
