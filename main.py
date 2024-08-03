@@ -267,7 +267,7 @@ class CameraInputPage(tk.CTkFrame):
         self.uploadedImage = tk.CTkLabel(self.imageHolder, width=400, height=400, text="")
 
         # Create a button to start/stop the camera and capture an image
-        self.imageButton = tk.CTkButton(self.centerFrame, text="Capture Picture", font=tk.CTkFont("Segoe", 20, "normal"), command=self.cameraUpload)
+        self.imageButton = tk.CTkButton(self.centerFrame, text="Start Camera", font=tk.CTkFont("Segoe", 20, "normal"), command=self.cameraUpload)
         
         # Create a 'Continue' button to proceed to the ObjectRecPage, initially disabled
         self.continueButton = tk.CTkButton(self.centerFrame, text="Continue", font=tk.CTkFont("Segoe", 20, "normal"), command=lambda:controller.show_frame("ObjectRecPage"), state="disabled") # Default state is disable to ensure that user does not continue without an uploaded image
@@ -299,7 +299,7 @@ class CameraInputPage(tk.CTkFrame):
         else:
             # Start the camera
             self.cameraActive = True
-            self.imageButton.configure(text="Stop Camera")
+            self.imageButton.configure(text="Capture Picture")
             self.continueButton.configure(state="disabled")
             self.cap = cv2.VideoCapture(0)
             self.displayWebcam()
